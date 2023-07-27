@@ -4,9 +4,9 @@ A tiny NTP client
 ---
 ## About
 
--[x] NTP v4
--[ ] Leap Second
--[ ] Cryptography
+- [x] NTP v4
+- [ ] Leap Second
+- [ ] Cryptography
 
 Only outputs the time in stdout as for now.
 
