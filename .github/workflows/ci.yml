@@ -1,0 +1,22 @@
+name: ci
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  linux-x86_64:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build
+      run: sudo make all install dist
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: package
+        path: ./*.tar.gz
+        if-no-files-found: error
+
