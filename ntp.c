@@ -12,6 +12,11 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <time.h>
+#include <fcntl.h> // open(...), write(...)
+
+// For Sync Hardware Clock (Using Linux kernel API)
+#include <linux/rtc.h>
+#include <sys/ioctl.h>
 
 const uint64_t    NTP_Offset = 2208988800ULL; // First day UNIX
 const char* const NTP_Server = "0.in.pool.ntp.org"; // NTP Server URL for India
@@ -141,13 +146,38 @@ int main(void) {
 		return 1;
 	}
 
-	if (settimeofday(&time_ntp, NULL) < 0) {
-		printf("Error: settimeofday(...) - %s\n", strerror(errno));
+	int fd = 0;
+	struct rtc_time rt;
+	struct tm tp_tm;
+
+	if (gmtime_r(&time_ntp.tv_sec, &tp_tm) == NULL) {
+		printf("Error: gmtime_r(...) - %s\n", strerror(errno));
+		return 1;
+	}
+
+	rt.tm_sec  = tp_tm.tm_sec;
+	rt.tm_min  = tp_tm.tm_min;
+	rt.tm_hour = tp_tm.tm_hour;
+	rt.tm_mday = tp_tm.tm_mday;
+	rt.tm_mon  = tp_tm.tm_mon;
+	rt.tm_year = tp_tm.tm_year;
+
+	fd = open("/dev/rtc", O_RDONLY);
+	if (fd < 0) {
+		printf("Error: open(...) - %s\n", strerror(errno));
+		return 1;
+	}
+	if (ioctl(fd, RTC_SET_TIME, &rt) < 0) {
+		printf("Error: ioctl(...) - %s\n", strerror(errno));
+		return 1;
+	}
+	if (close(fd) < 0) {
+		printf("Error: close(...) - %s\n", strerror(errno));
 		return 1;
 	}
 
 	printf("Time: %s", ctime(&time_ntp.tv_sec));
-	printf("Your system is %ld seconds off\n", time_local.tv_sec - time_ntp.tv_sec);
+	printf("Your system was %ld seconds off\n", time_local.tv_sec - time_ntp.tv_sec);
 
 	return 0;
 }
