@@ -1,10 +1,11 @@
 # ntpc
-A tiny NTP client
+A tiny NTP client, [NTP v4 Spec Compliant](./RFC5905.pdf)
 
 ---
 ## About
 
 - [x] NTP v4
+- [ ] Time Difference
 - [ ] Leap Second
 - [ ] Cryptography
 
