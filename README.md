@@ -12,9 +12,8 @@ Only outputs the time in stdout as for now.
 
 ---
 ## References
-- https://www.eecis.udel.edu/%7Emills/y2k.html
-- https://datatracker.ietf.org/doc/html/rfc5905
-- https://www.meinbergglobal.com/english/info/ntp-packet.htm
+- NTP v4 Standard: https://datatracker.ietf.org/doc/html/rfc5905 [Click Here To View Local Copy In Repo](./RFC595.pdf)
+- A Bit Info About A NTP Packet: https://www.meinbergglobal.com/english/info/ntp-packet.htm
 - https://man7.org/linux/man-pages/man3/adjtime.3.html
 - https://man7.org/linux/man-pages/man4/rtc.4.html
 - https://scaryreasoner.wordpress.com/2009/02/28/checking-sizeof-at-compile-time/
