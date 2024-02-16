@@ -1,4 +1,5 @@
 #define _POSIX_C_SOURCE 200112L
+#define _DEFAULT_SOURCE
 
 #include <stdio.h>
 #include <string.h>
@@ -7,6 +8,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <time.h>
@@ -18,9 +20,9 @@ const char* const NTP_Port   = "123"; // By Default NTP Servers Use This Port
 struct NTP_Packet {
 	/*
 		First Byte Is Called Header And Contains:
-		   LI   = Leap Indicator, 2 Bits
-		   VN   = Version Number, 3 Bits
-		   Mode =           Mode, 3 Bits
+		LI   = Leap Indicator, 2 Bits
+		VN   = Version Number, 3 Bits
+		Mode =           Mode, 3 Bits
 	*/
 	uint8_t  Header;
 	uint8_t  Stratum;
@@ -60,9 +62,9 @@ int FetchNTP_Packet(struct NTP_Packet* pkt, const char* const server, const char
 	}
 
 	/* getaddrinfo() returns a list of address structures.
-	   Try each address until we successfully connect(2).
-	   If socket(2) (or connect(2)) fails, we (close the socket)
-	   and try the next address. */
+	Try each address until we successfully connect(2).
+	If socket(2) (or connect(2)) fails, we (close the socket)
+	and try the next address. */
 
 	struct addrinfo* rp = NULL;
 	int SocketFD = -1;
@@ -128,12 +130,24 @@ int main(void) {
 	*/
 	MyPacket.Header = 0x13;
 
-	printf("Server: %s\nPort: %s\n", NTP_Server, NTP_Port);
-
 	if (FetchNTP_Packet(&MyPacket, NTP_Server, NTP_Port) != 0) return 1;
 
-    time_t time = (time_t)(MyPacket.TransmitTimeStamp_Seconds - NTP_Offset);
-    printf("Time: %s", ctime(&time));
+	struct timeval time_ntp = {
+		(time_t)(MyPacket.TransmitTimeStamp_Seconds - NTP_Offset), 0
+	};
+	struct timeval time_local;
+	if (gettimeofday(&time_local, NULL) < 0) {
+		printf("Error: gettimeofday(...) - %s\n", strerror(errno));
+		return 1;
+	}
+
+	if (settimeofday(&time_ntp, NULL) < 0) {
+		printf("Error: settimeofday(...) - %s\n", strerror(errno));
+		return 1;
+	}
+
+	printf("Time: %s", ctime(&time_ntp.tv_sec));
+	printf("Your system is %ld seconds off\n", time_local.tv_sec - time_ntp.tv_sec);
 
 	return 0;
 }
