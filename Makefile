@@ -15,7 +15,7 @@ SRC = ntp.c
 
 all: ntpc
 
-ntpc:
+ntpc: $(SRC)
 	@echo CC - $(SRC)
 	@$(CC) $(CFLAGS) $(SRC) -o ./$@ $(LDFLAGS)
 
