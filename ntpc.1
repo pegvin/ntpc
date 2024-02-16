@@ -4,11 +4,11 @@
 ntpc \- a Tiny NTP client
 .\" --------------------------------------------------------------------
 .SH SYNOPSIS
-\fBntpc\fP [options]
+\fBntpc\fP
 .\" --------------------------------------------------------------------
 .SH DESCRIPTION
 the \fBntpc\fP client fetches time from a user specified ntp server and synchronizes system clock accordingly using
-.BR adjtime (3)
+.BR rtc(4)
 .\" --------------------------------------------------------------------
 .SH OPTIONS
 There are no command line options.
@@ -18,6 +18,6 @@ There are no command line options.
 \fILICENSE\fP file.
 .\" --------------------------------------------------------------------
 .SH "SEE ALSO"
-.BR ntpd (8),
-.BR adjtime (3).
+.BR rtc(4),
+.BR ntpd(8)
 
